@@ -18,6 +18,7 @@ Rails::Initializer.run do |config|
   # config.frameworks -= [ :active_record, :active_resource, :action_mailer ]
 
   # Specify gems that this application depends on.
+  config.gem 'oauth'
   config.gem 'RedCloth',
              :lib => 'redcloth', 
              :version => '>= 3.0.4'

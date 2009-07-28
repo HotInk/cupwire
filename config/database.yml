@@ -2,7 +2,7 @@
 
 development:
   adapter: mysql
-  database: CHANGEME_development
+  database: sample_Development
   username: root
   password: 
   host: localhost

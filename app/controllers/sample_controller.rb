@@ -4,7 +4,7 @@ class SampleController < ApplicationController
   
   def show
     @numba = params[:id] if params[:id]
-    @articles = @access_token.get('http://0.0.0.0:3000/accounts/1/articles.xml')
+    @articles = @access_token.get(OAUTH_CREDENTIALS[:site] + '/accounts/7/articles.xml')
   end
 
 end

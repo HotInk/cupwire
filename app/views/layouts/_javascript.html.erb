@@ -1,2 +1,6 @@
 <%= javascript_include_tag :defaults, :cache => true %>
 <%= yield :javascript %>
+<script type="text/javascript" charset="utf-8">
+	//Load each article <li> as a Card and check to see if any checkboxes are pre-checked and need to be pre-selected 
+	$('page_container').select('ol#articles_list>li').each( function (t) { a = new Card(t); if (a.checkbox.checked) a.select(); });
+</script>

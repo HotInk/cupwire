@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
 
-  OAUTH_CREDENTIALS = { :token => "fFyBlZSswep4BroSs7og", :secret => "kJWSD4xzHo6bn03ck0UHRLkIueatOdsi8suLpmWPA", :site =>"http://0.0.0.0:3000" }
-
+  OAUTH_CREDENTIALS = { :token => "7YGXKUCuxIZOcsNiiSHiQ", :secret => "0zVkcvM2ODreM000dB9QCZpZGisJUNNO3dlkvGJhxYQ", :site =>"http://hotink.theorem.ca" }
+  
   before_filter :require_user
   
   helper :all
@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
             UserSession.create!(access_token.user)
           else
             # Either Hot Ink is confused, or someone's trying to break in
-            render :status => 401
+            render :text => "Oauth verification not accepted.", :status => 401
             return
           end
         else
@@ -59,7 +59,7 @@ class ApplicationController < ActionController::Base
     
     
       # Last resort, this must be a fresh user request. Forward along to Hot Ink to authenticate.
-      redirect_to "http://0.0.0.0:3000/remote_session/new?key=fFyBlZSswep4BroSs7og"
+      redirect_to "#{OAUTH_CREDENTIALS[:site]}/remote_session/new?key=#{OAUTH_CREDENTIALS[:token]}"
       return false
     end
   end

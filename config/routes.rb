@@ -1,9 +1,15 @@
 ActionController::Routing::Routes.draw do |map|
-  map.root :controller => :sample, :action => :show
-  map.test '/test', :controller => :sample, :action => :show, :id => 5
+  map.resources :pick_ups
+
   
+  map.root :controller => :articles, :action => :index
+
+  map.resources :articles
   map.resource :user_session
   map.resources :users
+
+
+
   # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   map.resources :products
 

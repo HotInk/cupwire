@@ -1,0 +1,41 @@
+<li id="article_<%= article.id %>" class="<%= cycle("even-row", "odd-row") %> published clearfix">
+				
+	<div class="status">
+		<input type="checkbox" value="<%= article.id %>" name="article_ids[]"/>
+	</div>
+	
+	<div class="article clearfix">
+		<h1> &ldquo;<%=link_to h(article.title.strip), article_url(article), :class=>"document_link" %>&rdquo; </h1>
+		<div class="article_details clearfix">
+			<div class="authors">
+				<em><%= article.authors_list if article.authors_list %></em>
+			</div>
+		</div>
+	</div>
+
+	<div class="section">
+		<p> <%= article.section.blank? ? "<span style=\"color: #BBB\">No section</span>" : article.section %></p>
+	</div>
+	
+	<div class="tags">
+
+	</div>
+
+	<div class="icons transparent">
+		<%= #link_to "&nbsp;&nbsp;&nbsp;", [@account, article], :confirm => "You are about to delete the article: \n \n &quot;" + h(article.display_title) + "&quot;\n \n Click 'OK' to delete or 'Cancel' to return to the page.", :method => :delete, :class=>"delete_link", :style=>"display:none;" 
+		%>
+	</div>
+	
+	<div class="date">
+		<% if article.published_at %>
+			<%= h Time.parse(article.published_at).to_s(:standard) %>
+		<% end %>
+		
+		<% if article.bodytext %>
+			<p><%= article.bodytext.scan(/\w+/).size %> words</p>
+		<% else %>
+			<p>No bodytext</p>
+		<% end %>
+	</div>
+		
+</li>

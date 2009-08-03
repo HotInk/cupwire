@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  owner_account_id: 1
+  owner_article_id: 1
+  wire_article_id: 1
+
+two:
+  owner_account_id: 1
+  owner_article_id: 1
+  wire_article_id: 1

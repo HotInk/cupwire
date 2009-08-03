@@ -19,6 +19,7 @@ Rails::Initializer.run do |config|
 
   # Specify gems that this application depends on.
   config.gem 'oauth'
+  config.gem 'rdiscount'
   config.gem 'RedCloth',
              :lib => 'redcloth', 
              :version => '>= 3.0.4'

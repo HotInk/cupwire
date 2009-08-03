@@ -2,7 +2,7 @@
 
 development:
   adapter: mysql
-  database: sample_Development
+  database: cupwire_development
   username: root
   password: 
   host: localhost

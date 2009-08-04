@@ -52,7 +52,14 @@ class Hash
   def acts_like_hash?
     true
   end
-end
+  
+   def urlencode  
+     to_a.map do |name_value|  
+       name_value.map { |e| CGI.escape e.to_s }.join '='  
+     end.join '&'  
+  end
+end  
+
 
 class Object
   # Makes sure the object you're arrayifying is definitely an array
@@ -81,6 +88,8 @@ module ActiveResource
       # otherwise just return the raw body of the request
       request(:get, path, build_request_headers(headers, :get)).body
     end
+
+    
   end
 end
 
@@ -96,6 +105,9 @@ class HyperactiveResource < ActiveResource::Base
   # saved because record is invalid.
   class ResourceNotSaved < AbstractRecordError; end
   class ResourceNotFound < AbstractRecordError; end
+  
+  # Create attribute to hold the current object's OAuth access token
+  attr_accessor :access_token
 
   # Quick overloading of the ActiveRecord-style naming function for the
   # model in error messages.  This will be updated when associations are
@@ -188,9 +200,9 @@ class HyperactiveResource < ActiveResource::Base
   self.define_callbacks *ActiveRecord::Base::CALLBACKS
   
   # make sure attributes of ARES has indifferent_access
-  def initialize(attributes = {})
+  def initialize(attributes = {})    
     @attributes     = {}.with_indifferent_access
-    @prefix_options = {}
+    @prefix_options = {}    
     load(attributes)
   end                             
 
@@ -465,7 +477,7 @@ class HyperactiveResource < ActiveResource::Base
     # overwrite the encoding function to massage our attributes
     # into a form that can be encoded nicely.
     # Note - we now don't pass through any attributes except ones that are
-    # known to exist ont he backend... ie remove everything that is not a
+    # known to exist on the backend... ie remove everything that is not a
     # column or a known belongs_to association id
     #
     # If you want something to not be encoded - there is a parameter named
@@ -473,13 +485,19 @@ class HyperactiveResource < ActiveResource::Base
     # to not appear int he encoding eg:
     # Widget.skip_to_xml_for :wodget_id
     #
-    # This seems to have been a rrequirement when we didn't auto-clean the
+    # This seems to have been a requirement when we didn't auto-clean the
     # attributes. probably an :include would be more appropriate now.
     def encode(opts = {})
+      
+      # If we're using OAuth, we don't want to encode anything here.
+      # Instead, we pass the data along as parameters to 
+      # post and put requests.
+      #return super(opts) if self.access_token
+
 
       # first start with only the attributes that are actual columns
       massaged_attributes = attributes.dup.delete_if {|key,val| !self.class.columns.include?(key.to_sym) }
-
+      
       # add in the belong_to association ids - but only if we have any
       unless self.belong_tos.blank?
         # Massage patient.to_param into patient_id (for every belongs_to we have
@@ -487,7 +505,7 @@ class HyperactiveResource < ActiveResource::Base
         self.belong_tos.each do |thing|
           attr_name = thing.to_s.pluralize
           if attributes.has_key?(attr_name)
-            the_things = attributes[attr_name]
+            the_thing = attributes[attr_name]
             massaged_attributes["#{key}_id"] = the_thing.to_param unless the_thing.blank?
           elsif attributes.has_key?(attr_name+'_id')
             the_thing_id = attributes[attr_name+'_id']
@@ -501,11 +519,24 @@ class HyperactiveResource < ActiveResource::Base
 
       # the following is a copy of ARes's encode - but with our new attributes
       # It may need to be updated if we want to stay in line with ARes. :P
-      case self.class.format
-      when ActiveResource::Formats[:xml]
-        self.class.format.encode(massaged_attributes, {:root => self.class.element_name}.merge(opts))
+      if self.access_token
+        # If an access token exists, we need to prep these attributes further
+        # or else our receiving Rails app won't recognize the OAuth request parameters.
+        # Specifically, we need to be sure to encode each 'column' beneath the 
+        # resource class name.
+        self.class.columns.each do |column|
+          if massaged_attributes[column]
+            massaged_attributes["#{self.class.name.downcase}[#{column}]"] = massaged_attributes.delete(column)
+          end
+        end
+        massaged_attributes
       else
-        self.class.format.encode(massaged_attributes, opts)
+        case self.class.format
+        when ActiveResource::Formats[:xml]
+          self.class.format.encode(massaged_attributes, {:root => self.class.element_name}.merge(opts))
+        else
+          self.class.format.encode(massaged_attributes, opts)
+        end
       end
     end
     
@@ -527,6 +558,12 @@ class HyperactiveResource < ActiveResource::Base
         end
       end
     end
+    
+    # If this object has an OAuth access token assigned, pass off connection management to OAuth
+    def connection(refresh = false)
+      return self.access_token if self.access_token
+      self.class.connection(refresh)
+    end 
     
     # Update the resource on the remote service.
     def update
@@ -1065,21 +1102,46 @@ class HyperactiveResource < ActiveResource::Base
     # with the :params key, automatically add it... this is so we can use
     # standard AR syntax without having to pass in :params => :conditions =>
     # etc every time
+    # 
+    # Catched passed in OAuth identity (using ":as => access_token" syntax ) 
+    # and uses it to make requests instead of the connectioon method. 
     def self.find_every(options)
       begin
         from_value = options.respond_to?(:has_key?) && options.has_key?(:from) ? options.delete(:from) : nil
-        case from_value
-        when Symbol
-          instantiate_collection(get(from_value, options[:params]))
-        when String
-          path = "#{from_value}#{query_string(options[:params])}"
-          instantiate_collection(connection.get(path, headers).arrayify)
+        
+        # Grab OAuth access token if passed in using ":as => access_token" option
+        oauth_access_token = options.respond_to?(:has_key?) && options.has_key?(:as) ? options.delete(:as) : nil
+        # If OAuth access token is present, us it for requests rather than connection methon
+        
+        if oauth_access_token
+          case from_value
+          when Symbol
+            instantiate_collection(get(from_value, options[:params]))
+          when String
+            path = "#{from_value}#{query_string(options[:params])}"
+            instantiate_collection(format.decode(oauth_access_token.get(path, headers).body).arrayify)
+          else
+            prefix_options, query_options = split_options(options)
+            suffix_options = query_options.delete(:suffix_options)
+            path = collection_path(prefix_options, query_options, suffix_options)
+            instantiate_collection( format.decode(oauth_access_token.get(path, headers).body).arrayify, prefix_options )
+          end
         else
-          prefix_options, query_options = split_options(options)
-          suffix_options = query_options.delete(:suffix_options)
-          path = collection_path(prefix_options, query_options, suffix_options)
-          instantiate_collection( (connection.get(path, headers).arrayify), prefix_options )
-        end
+          
+          case from_value
+          when Symbol
+            instantiate_collection(get(from_value, options[:params]))
+          when String
+            path = "#{from_value}#{query_string(options[:params])}"
+            instantiate_collection(connection.get(path, headers).arrayify)
+          else
+            prefix_options, query_options = split_options(options)
+            suffix_options = query_options.delete(:suffix_options)
+            path = collection_path(prefix_options, query_options, suffix_options)
+            instantiate_collection( (connection.get(path, headers).arrayify), prefix_options )
+          end
+        end  
+      
       rescue ActiveResource::ResourceNotFound
         # We should be swallowing RecordNotFound exceptions and returning
         # nil - as per ActiveRecord.
@@ -1090,9 +1152,23 @@ class HyperactiveResource < ActiveResource::Base
     # hack on find_single to params-ify the options automatically
     # This allows us to pass in AR-style options (eg :conditions => etc)
     # without having to add a :params in front of it
-    def self.find_single(id, opts)
-      super(id, paramsify_options(opts))
+    # 
+    # Make sure to catch OAuth access token and reroute requests if one 
+    # is passed in.
+    def self.find_single(id, options)
+      # Grab OAuth access token if passed in using ":as => access_token" option
+      oauth_access_token = options.respond_to?(:has_key?) && options.has_key?(:as) ? options.delete(:as) : nil
+      # If OAuth access token is present, us it for requests rather than connection methon
+      options = paramsify_options(options)
+      if oauth_access_token
+        prefix_options, query_options = split_options(options[:params])
+        path = element_path(id, prefix_options, query_options)
+        instantiate_record(format.decode(oauth_access_token.get(path, headers).body), prefix_options)
+      else
+        super(id, options)
+      end
     end
+    
 
     def self.paramsify_options(opts)
       return opts if opts.blank? || !opts.respond_to?(:has_key?) || opts.has_key?(:params)

@@ -1,0 +1,27 @@
+<div class="small_top_button clearfix"><a href="#" class="close_window" onclick="page_overlay.end();return false;"> <img src="/images/window_x.png" /> </a></div>
+<div id="pick_up" class="clearfix" style="background-color: white">
+	<h1>Pick up this article?</h1>
+	<p>Picking up this article will create a <strong>draft copy</strong> of this article in your account. Feel free to edit, rework and republish this article.</p>
+	<p><strong>Hot Ink</strong> will maintain a link between this article and your republished version.</p>
+	<% form_for @pick_up do |p|%>
+		<fieldset>
+			<legend>Article</legend>
+			<h1 class="wire_article"><%= @article.title %></h1>
+			<p>Published on <span style="color: green;"><strong><%= Time.parse(@article.published_at).to_s(:long_date)%></strong></span></p>
+			<% unless @article.authors_list.blank? %>
+				<p>By <strong><%= @article.authors_list %></strong></p>
+			<% end %>
+			<%= p.hidden_field :owner_account_id %>
+			<%= p.hidden_field :owner_article_id %>
+		</fieldset>
+		<div class="column_holder full_column">
+			<div class="third_column" style="text-align: left">
+				<%= button_link_to_function "Cancel", "page_overlay.end();return false;", :class => "cancel" %>
+			</div>
+			<div class="two_thirds_column" style="text-align: right">
+				<%= hidden_field_tag "redirect_to", "index", :id =>:pick_up_redirect %>
+				<%= button_link_to_submit "Confirm, return to article stream" %>
+			</div>
+		</div>
+	<% end %>
+</div>

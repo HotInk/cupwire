@@ -1,10 +1,9 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :pick_ups
-
   
   map.root :controller => :articles, :action => :index
 
   map.resources :articles
+  map.resources :pick_ups
   map.resource :user_session
   map.resources :users
 

@@ -3,7 +3,6 @@ class ArticlesController < ApplicationController
   before_filter :load_access_token
   
   def index
-    @numba = params[:id] if params[:id]
     @articles = Article.find(:all, :account_id => 7, :as => @access_token)
   end
   

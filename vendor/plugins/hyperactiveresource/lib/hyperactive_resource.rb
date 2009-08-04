@@ -489,12 +489,6 @@ class HyperactiveResource < ActiveResource::Base
     # attributes. probably an :include would be more appropriate now.
     def encode(opts = {})
       
-      # If we're using OAuth, we don't want to encode anything here.
-      # Instead, we pass the data along as parameters to 
-      # post and put requests.
-      #return super(opts) if self.access_token
-
-
       # first start with only the attributes that are actual columns
       massaged_attributes = attributes.dup.delete_if {|key,val| !self.class.columns.include?(key.to_sym) }
       
@@ -522,7 +516,7 @@ class HyperactiveResource < ActiveResource::Base
       if self.access_token
         # If an access token exists, we need to prep these attributes further
         # or else our receiving Rails app won't recognize the OAuth request parameters.
-        # Specifically, we need to be sure to encode each 'column' beneath the 
+        # Specifically, we need to be sure to label each 'column' beneath the 
         # resource class name.
         self.class.columns.each do |column|
           if massaged_attributes[column]

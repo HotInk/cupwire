@@ -6,6 +6,9 @@
     <title>cupwire</title>
     <%= stylesheet_link_tag 'hotink', :media => 'all', :cache => true %>
     <%= stylesheet_link_tag 'cupwire', :media => 'all', :cache => true %>
+	<%= javascript_include_tag :defaults %>
+	<%= javascript_include_tag 'builder' %>
+	<%= javascript_include_tag 'overlay' %>
   </head>
   <body class="<%= body_class %>">
     <%= render :partial => 'layouts/flashes' -%>

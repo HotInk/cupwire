@@ -1,0 +1,4 @@
+page.assign "pick_ups_overlay", render(:partial => 'form')
+page << "$('article').select('.spinner')[0].hide()"
+page << "if($('pick_up')) { $('pick_up').previous().remove();$('pick_up').remove();}"
+page << "page_overlay.render( pick_ups_overlay );"

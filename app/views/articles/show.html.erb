@@ -1,8 +1,9 @@
 <div id="page_container">
 	
-	<%= link_to "&laquo; Back to the article stream", articles_path, :class=>"weblink" %>
+	<%= link_to "&laquo; Back to the article stream", root_url, :class=>"weblink" %>
 	
 	<div id="article" class="cupwire">
+		<p><span class="account_name"><%= @article.account_name %></span></p>
 		<h1><%= @article.title %></h1>
 		<h2><%= @article.subtitle %></h2>
 		<p class="date"><span  style="color: green"><%= Time.parse(@article.published_at).to_s(:long_date)%> </span> (<%= time_ago_in_words(Time.parse(@article.published_at))%> ago)</p>

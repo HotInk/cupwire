@@ -1,1 +1,4 @@
+div#page_container { padding-top: 0; }
+
 #article.cupwire .date { font-family: "lucida grande", Verdana, Helvetica, Arial, sans-serif; font-variant: normal; font-weight: 200; font-size:1.1em; }
+.account_name { padding: 2px; font-size: 0.95em; background-color: #85B4EC; border: 1px solid #D5DFEB; color: #EFEFEF; }

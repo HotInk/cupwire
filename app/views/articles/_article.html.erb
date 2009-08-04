@@ -8,7 +8,7 @@
 		<h1> &ldquo;<%=link_to h(article.title.strip), article_url(article), :class=>"document_link" %>&rdquo; </h1>
 		<div class="article_details clearfix">
 			<div class="authors">
-				<em><%= article.authors_list if article.authors_list %></em>
+				<span class="account_name"><%= article.account_name %></span> <em><%= article.authors_list if article.authors_list %></em>
 			</div>
 		</div>
 	</div>
@@ -18,7 +18,11 @@
 	</div>
 	
 	<div class="tags">
-
+		<% unless article.tag_list.blank? %>
+			<p><em> <%= article.tag_list %></em></p>
+		<% else %>
+			<p><em><span style="color: #BBB">No tags</span> </em></p>
+		<% end %>
 	</div>
 
 	<div class="icons transparent">

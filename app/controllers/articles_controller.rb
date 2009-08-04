@@ -4,11 +4,11 @@ class ArticlesController < ApplicationController
   
   def index
     @numba = params[:id] if params[:id]
-    @articles = Article.find(:all, :as => @access_token)
+    @articles = Article.find(:all, :account_id => 7, :as => @access_token)
   end
   
   def show
-    @article = Article.find(params[:id], :as => @access_token)
+    @article = Article.find(params[:id], :account_id =>7,  :as => @access_token)
   end
 
 end

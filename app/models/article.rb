@@ -1,5 +1,4 @@
 class Article < HyperactiveResource
-  self.prefix = "/accounts/7/"
-  
+  belongs_to :account, :nested => true
 
 end

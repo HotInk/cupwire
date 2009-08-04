@@ -14,7 +14,6 @@ if (theField.value == '')
 theField.value = theField.defaultValue;
 }
 
-
 /* Index page "card" functionality */
 
 var Card = Class.create({

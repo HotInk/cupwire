@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
 
   OAUTH_CREDENTIALS = { :token => "7YGXKUCuxIZOcsNiiSHiQ", :secret => "0zVkcvM2ODreM000dB9QCZpZGisJUNNO3dlkvGJhxYQ", :site =>"http://hotink.theorem.ca" }
+  #OAUTH_CREDENTIALS = { :token => 'fFyBlZSswep4BroSs7og', :secret => 'kJWSD4xzHo6bn03ck0UHRLkIueatOdsi8suLpmWPA', :site => "http://0.0.0.0:3000"}
   
   before_filter :require_user
   
@@ -59,7 +60,7 @@ class ApplicationController < ActionController::Base
     
     
       # Last resort, this must be a fresh user request. Forward along to Hot Ink to authenticate.
-      redirect_to "#{OAUTH_CREDENTIALS[:site]}/remote_session/new?key=#{OAUTH_CREDENTIALS[:token]}"
+      redirect_to "#{OAUTH_CREDENTIALS[:site]}/remote_session/new?key=#{OAUTH_CREDENTIALS[:token]}&url=#{request.request_uri}"
       return false
     end
   end

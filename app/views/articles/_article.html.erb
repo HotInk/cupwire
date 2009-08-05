@@ -5,7 +5,7 @@
 	</div>
 	
 	<div class="article clearfix">
-		<h1> &ldquo;<%=link_to h(article.title.strip), article_url(article), :class=>"document_link" %>&rdquo; </h1>
+		<h1> &ldquo;<%=link_to article.title.nil? ? "no headline" : h(article.title.strip), article_url(article), :class=>"document_link" %>&rdquo; </h1>
 		<div class="article_details clearfix">
 			<div class="authors">
 				<span class="account_name"><%= article.account_name %></span> <em><%= article.authors_list if article.authors_list %></em>

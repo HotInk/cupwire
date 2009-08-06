@@ -1,7 +1,11 @@
-div#page_container { padding-top: 0; }
+div#page_container { padding-top: 0; margin-bottom: 15px;}
 
 #article.cupwire .date { font-family: "lucida grande", Verdana, Helvetica, Arial, sans-serif; font-variant: normal; font-weight: 200; font-size:1.1em; }
 .account_name { padding: 2px; font-size: 0.95em; background-color: #85B4EC; border: 1px solid #D5DFEB; color: #EFEFEF; }
+
+li.picked_up { background-color: #DDF6FF; }
+li.picked_up h1>small { color: #666; }
+li.picked_up h1 a { color: #999; }
 
 #pick_up { width: 500px; padding: 0px 10px; padding-bottom: 10px; }
 #pick_up h1.wire_article { font-size: 1em; }
@@ -9,3 +13,8 @@ div#page_container { padding-top: 0; }
 #pick_up fieldset legend { font-size: 1.1em; font-weight: bold; }
 #pick_up fieldset h1, #pick_up fieldset p { margin: 5px 0px; }
 #pick_up .column_holder { padding-top: 15px;}
+
+.footer { text-align: right; font-size: 0.9em;}
+
+/* Account label colours */
+

@@ -1,11 +1,17 @@
-<div id="page_container">
+<div id="page_container" class="clearfix">
+	<p><%= @article.inspect %></p>
+	
 	<p><%= link_to "&laquo; Back to the article stream", root_url, :class=>"weblink" %></p>
 	
 	<div id="article" class="cupwire">
 	  <div class="clearfix">	
 		<p style="float:left;"><span class="account_name"><%= @article.account_name %></span></p>
-		<p style="float:right;"><%= button_link_to_remote "Pick Up This Article", :url => new_pick_up_path(:owner_account_id =>@article.account_id, :owner_article_id => @article.id), :after => "$(this).next().show();", :method => :get, :html => { :class => "small" } %><img src="/images/loading_small_white.gif" style="float:left;margin-right:0.5em;margin-top:0.25em;display:none;" class="spinner"/></p>
-	  </div>
+		<%- if PickUp.find_by_owner_article_id(@article.id) -%>
+			<p style="float:right;"><strong>Already picked-up!</strong> <%= button_link_to_remote "Pick Up Again?", :url => new_pick_up_path(:owner_account_id =>@article.account_id, :owner_article_id => @article.id), :after => "$(this).up().next().show();", :method => :get, :html => { :class => "small cancel" } %></p><img src="/images/loading_small_white.gif" style="float:right;margin-right:0.5em;margin-top:1.5em;display:none;" class="spinner"/>
+	  	<%- else -%>
+			<p style="float:right;"><%= button_link_to_remote "Pick Up This Article", :url => new_pick_up_path(:owner_account_id =>@article.account_id, :owner_article_id => @article.id), :after => "$(this).up().next().show();", :method => :get, :html => { :class => "small" } %></p><img src="/images/loading_small_white.gif" style="float:right;margin-right:0.5em;margin-top:1.5em;display:none;" class="spinner"/>
+		<%- end -%>
+	</div>
 		<h1><%= @article.title %></h1>
 		<h2><%= @article.subtitle %></h2>
 		<p class="date"><span  style="color: green"><%= Time.parse(@article.published_at).to_s(:long_date)%> </span> (<%= time_ago_in_words(Time.parse(@article.published_at))%> ago)</p>

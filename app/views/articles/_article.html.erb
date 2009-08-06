@@ -1,14 +1,28 @@
-<li id="article_<%= article.id %>" class="<%= cycle("even-row", "odd-row") %> published clearfix">
+<li id="article_<%= article.id %>" class="<%= cycle("even-row", "odd-row") %> <%= @pick_ups.member?(article.id.to_i) ? "picked_up" : "published" %> clearfix">
 				
 	<div class="status">
 		<input type="checkbox" value="<%= article.id %>" name="article_ids[]"/>
 	</div>
 	
 	<div class="article clearfix">
-		<h1> &ldquo;<%=link_to article.title.nil? ? "no headline" : h(article.title.strip), article_url(article), :class=>"document_link" %>&rdquo; </h1>
+		<h1> 
+			&ldquo;<%=link_to article.title.nil? ? "no headline" : h(article.title.strip), article_url(article, :account_id => article.account_id), :class=>"document_link" %>&rdquo; 
+			<%- if @pick_ups.member?(article.id.to_i) -%>
+			<small>Picked up</small>
+			<%- end -%>
+		</h1>
 		<div class="article_details clearfix">
 			<div class="authors">
 				<span class="account_name"><%= article.account_name %></span> <em><%= article.authors_list if article.authors_list %></em>
+			</div>
+			<div class="media">
+				<% article.mediafiles.each do | i | %>
+					<% if i.attributes["type"]=="Image" %>
+						<%= image_tag HOTINK_SETTINGS.site + i.url.system_icon, :border=>1  %>
+					<% else %>
+						<%= image_tag('/images/blank_file_icon.png') if i %>
+					<% end %>
+				<% end %>
 			</div>
 		</div>
 	</div>

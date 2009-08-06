@@ -1,7 +1,4 @@
 class ApplicationController < ActionController::Base
-
-  OAUTH_CREDENTIALS = { :token => "7YGXKUCuxIZOcsNiiSHiQ", :secret => "0zVkcvM2ODreM000dB9QCZpZGisJUNNO3dlkvGJhxYQ", :site =>"http://hotink.theorem.ca" }
-  #OAUTH_CREDENTIALS = { :token => 'fFyBlZSswep4BroSs7og', :secret => 'kJWSD4xzHo6bn03ck0UHRLkIueatOdsi8suLpmWPA', :site => "http://0.0.0.0:3000"}
   
   before_filter :require_user
   
@@ -76,7 +73,7 @@ class ApplicationController < ActionController::Base
     
     
       # Last resort, this must be a fresh user request. Forward along to Hot Ink to authenticate.
-      redirect_to "#{OAUTH_CREDENTIALS[:site]}/remote_session/new?key=#{OAUTH_CREDENTIALS[:token]}&request_url=#{request.request_uri}"
+      redirect_to "#{HOTINK_SETTINGS.site}/remote_session/new?key=#{HOTINK_SETTINGS.token}&request_url=#{request.request_uri}"
       return false
     end
   end
@@ -84,7 +81,7 @@ class ApplicationController < ActionController::Base
   def get_consumer
     require 'oauth/consumer'
     require 'oauth/signature/rsa/sha1'
-    consumer = OAuth::Consumer.new(OAUTH_CREDENTIALS[:token], OAUTH_CREDENTIALS[:secret], { :site => OAUTH_CREDENTIALS[:site] })
+    consumer = OAuth::Consumer.new(HOTINK_SETTINGS.token, HOTINK_SETTINGS.secret, { :site => HOTINK_SETTINGS.site })
   end
     
   def load_access_token

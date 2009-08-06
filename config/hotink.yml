@@ -1,0 +1,5 @@
+# This file contains the site identification code for the Hot Ink server 
+# this application should communicate with.
+site: http://hotink.theorem.ca
+token: 7YGXKUCuxIZOcsNiiSHiQ
+secret: 0zVkcvM2ODreM000dB9QCZpZGisJUNNO3dlkvGJhxYQ

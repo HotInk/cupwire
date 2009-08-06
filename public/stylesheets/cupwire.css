@@ -1,7 +1,9 @@
 div#page_container { padding-top: 0; margin-bottom: 15px;}
+.account_name { padding: 2px; font-size: 0.95em; background-color: #85B4EC; border: 1px solid #D5DFEB; color: #EFEFEF; }
 
 #article.cupwire .date { font-family: "lucida grande", Verdana, Helvetica, Arial, sans-serif; font-variant: normal; font-weight: 200; font-size:1.1em; }
-.account_name { padding: 2px; font-size: 0.95em; background-color: #85B4EC; border: 1px solid #D5DFEB; color: #EFEFEF; }
+#article.cupwire .media_thumbs { float: right; width: 50%; padding: 5px; margin: 0 5px;}
+#article.cupwire .media_thumbs h3 { margin-top:0;}
 
 li.picked_up { background-color: #DDF6FF; }
 li.picked_up h1>small { color: #666; }

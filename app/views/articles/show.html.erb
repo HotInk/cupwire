@@ -14,6 +14,16 @@
 		<h2><%= @article.subtitle %></h2>
 		<p class="date"><span  style="color: green"><%= Time.parse(@article.published_at).to_s(:long_date)%> </span> (<%= time_ago_in_words(Time.parse(@article.published_at))%> ago)</p>
 		<p style="font-weight: bold"><%= @article.authors_list %></p>
+		<%- unless @article.mediafiles.blank? -%>
+			<div class="media_thumbs">
+				<h3>Media</h3>
+				<%- for mediafile in @article.mediafiles -%>
+					<%- if mediafile.attributes["type"]=="Image" -%>
+						<%= link_to_function image_tag(HOTINK_SETTINGS.site+mediafile.url.system_thumb, :border => 1), "page_overlay.render( '<div class=\"small_top_button clearfix\"><a href=\"#\" class=\"close_window\" onclick=\"page_overlay.end();return false;\"> <img src=\"/images/window_x.png\" /> </a></div><img src=\"#{HOTINK_SETTINGS.site+mediafile.url.large}\" style=\"position:relative;z-index: 300;\" />' );" %>
+					<%- end -%>
+				<%- end -%>
+			</div>
+		<%- end -%>
 		<%= markdown @article.bodytext %>
 	</div>
 	

@@ -20,7 +20,7 @@ var Card = Class.create({
 	initialize: function(element, selected) {
 		this.element = $(element);
 		this.document_link = this.element.select('.document_link')[0];
-		this.delete_link = this.element.select('.delete_link')[0];
+		//this.delete_link = this.element.select('.delete_link')[0];
 		this.selected = selected;
 		this.element.card = this;
 		this.checkbox = this.element.select('input[type="checkbox"]')[0];
@@ -57,12 +57,12 @@ var Card = Class.create({
 	
 	onmouseover: function() {
 		this.element.addClassName('highlighted_card');
-		this.delete_link.show();
+		//this.delete_link.show();
 	},
 	
 	onmouseout: function() {
 		this.element.removeClassName('highlighted_card');
-		this.delete_link.hide();
+		//this.delete_link.hide();
 	}
 
 });

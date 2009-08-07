@@ -880,13 +880,14 @@ class HyperactiveResource < ActiveResource::Base
         nest_class = self.const_get(nest_class_name.camelize)               
         while nest_class.nested do
           the_class_name = nest_class_name.underscore
-          the_prefix =  "#{the_class_name.pluralize}/:#{the_class_name}_id/" + the_prefix
+          the_prefix =  "#{nest_class_name.underscore.pluralize}/:#{the_class_name}_id/" + the_prefix
           
           # Set up next loop
           nest_class_name = nest_class.nested.to_s
-          nest_class = self.const_get(nest_class.nested.to_s.camelize) # Eventually, this kicks us out of the loop with NameError
+          nest_class = self.const_get(nest_class.nested.to_s.camelize) # This may kick us out of the loop with NameError
         end
       rescue NameError
+      ensure
         the_class_name = nest_class_name.underscore
         the_prefix = "/#{the_class_name.pluralize}/:#{the_class_name}_id/" + the_prefix
       end

@@ -873,18 +873,25 @@ class HyperactiveResource < ActiveResource::Base
     # association-fetching
     def self.nested=(name)
       
-      # If the 'nest' class is also nested, we're going to need its prefix too
-      if self.const_defined?(name.to_s.camelize)&&self.const_get(name.to_s.camelize).nested
-        the_class_name = name.to_s.underscore
-        self.prefix = self.const_get(name.to_s.camelize).prefix + "#{the_class_name.pluralize}/:#{the_class_name}_id/"
-      else
-        # generate a quick-trick prefix path on the nested resource and pass
-        # in the required prefix option which is our own id
-        the_class_name = name.to_s.underscore
-        # add the nested resource as a prefix-path
-        self.prefix = "/#{the_class_name.pluralize}/:#{the_class_name}_id/"
+      # Walk back through nested classes to find all the necessary prefix options
+      begin
+        the_prefix = ""  
+        nest_class_name = name.to_s
+        nest_class = self.const_get(nest_class_name.camelize)               
+        while nest_class.nested do
+          the_class_name = nest_class_name.underscore
+          the_prefix =  "#{the_class_name.pluralize}/:#{the_class_name}_id/" + the_prefix
+          
+          # Set up next loop
+          nest_class_name = nest_class.nested.to_s
+          nest_class = self.const_get(nest_class.nested.to_s.camelize) # Eventually, this kicks us out of the loop with NameError
+        end
+      rescue NameError
+        the_class_name = nest_class_name.underscore
+        the_prefix = "/#{the_class_name.pluralize}/:#{the_class_name}_id/" + the_prefix
       end
       
+      self.prefix = the_prefix
       @nested = name
     end
     # just returns the current value for "nested"
